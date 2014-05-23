@@ -1,60 +1,66 @@
-Backbone.touch
-==============
+# Backbone Input: Touch
 
-Monkey patch Backbone.View to enable fast tap events on touch devices.
 
-## Usage ##
+Enables Backbone views with fast tap and swipe events on touch devices.
 
-Backbone.touch is made to work with your existing views.
-It replaces the `delegateEvents` method and replaces any *click* event
-with the three events *touchstart*, *touchmove* and *touchend* when a touch
-device is used. Once the touchend fires your callback is executed without the
-300ms delay that the *click* event has.
+The plugin is made to work with your existing views. It replaces the `delegateEvents` method and replaces any *click* event with the three events *touchstart*, *touchmove* and *touchend* when a touch device is used. Once the touchend fires your callback is executed without the 300ms delay that the *click* event has.
 
-## Download & Include ##
 
-### Bower install
+## Examples
 
-`bower install backbone.touch`
+*
 
-### Manual download
 
-* [Development](https://raw.github.com/nervetattoo/backbone.touch/master/backbone.touch.js)
-* [Production](https://raw.github.com/nervetattoo/backbone.touch/master/dist/backbone.touch.min.js)
+## Features
 
-Depends on Underscore, Backbone and jQuery.  You can swap out the 
-jQuery dependency completely with a custom configuration.
+* Addresses the 300ms delay
+* Uses FastClick if available
+* One finger swipes
 
-Include in your application *after* jQuery, Underscore, and Backbone have been
-included.
 
-``` html
-<script src="/js/jquery.js"></script>
-<script src="/js/underscore.js"></script>
-<script src="/js/backbone.js"></script>
+## Dependencies
 
-<script src="/js/backbone.touch.js"></script>
+* [Backbone](http://backbonejs.org/)
+* [Underscore](http://underscorejs.org/)
+* [jQuery](http://jquery.com/)
+
+
+## Install
+
+Using [Bower](http://bower.io/)
+```
+bower install backbone.touch`
+```
+Manual download
+
+* [Uncompressed](https://github.com/backbone-input/touch/raw/master/build/backbone.input.touch-min.js)
+* [Minified](https://github.com/backbone-input/touch/raw/master/build/backbone.input.touch-min.js)
+
+
+## Usage
+
+Note that this extension currently overwrites `Backbone.View` but its features are behing an option flag, to limit its usage only when needed.
+
+After all dependencies (an plugin) are loaded,  simply state:
+
+```
+var view = Backbone.View({
+	options: {
+		touch: true
+	}
+});
 ```
 
-Note that backbone.touch currently overwrites `Backbone.View` to make its usage
-a no-op part from including it.
 
-## Release notes ##
+## Credits
 
-### 0.3 ###
+Initiated by Makis Tracend ( [@tracend](http://github.com/tracend) )
 
-* Possibility to override the threshold
-* Grunt v4.0
+Distributed through [Makesites.org](http://makesites.org)
 
-### 0.2 ###
+Originally based on [Backbone.Touch](https://github.com/nervetattoo/backbone.touch)
 
-* Register as an anonymous AMD module
-
-### 0.1 ###
-
-* Initial release. Only tested on iPad
 
 ## License
 
-[MIT License](http://en.wikipedia.org/wiki/MIT_License)
-(c) [Raymond Julin](http://twitter.com/nervetattoo)
+Released under the [MIT License](http://makesites.org/licenses/MIT)
