@@ -8,7 +8,8 @@ The plugin is made to work with your existing views. It replaces the `delegateEv
 
 ## Examples
 
-*
+* [Single Touch](https://rawgit.com/backbone-input/touch/master/build/examples/single-touch.html)
+* [Single Swipe](https://rawgit.com/backbone-input/touch/master/build/examples/single-swipe.html)
 
 
 ## Features
@@ -16,6 +17,7 @@ The plugin is made to work with your existing views. It replaces the `delegateEv
 * Addresses the 300ms delay
 * Uses FastClick if available
 * One finger swipes
+* AMD/CommonJS module
 
 
 ## Dependencies
@@ -29,7 +31,7 @@ The plugin is made to work with your existing views. It replaces the `delegateEv
 
 Using [Bower](http://bower.io/)
 ```
-bower install backbone.touch`
+bower install backbone.input.touch`
 ```
 Manual download
 
@@ -44,7 +46,7 @@ Note that this extension currently overwrites `Backbone.View` but its features a
 After all dependencies (an plugin) are loaded,  simply state:
 
 ```
-var view = Backbone.View({
+var view = new Backbone.View({
 	options: {
 		touch: true
 	}
