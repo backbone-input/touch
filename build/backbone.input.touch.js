@@ -2,7 +2,7 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 0.7.0 (Sat, 24 May 2014 05:26:32 GMT)
+ * Version: 0.7.0 (Sat, 24 May 2014 09:24:43 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
@@ -58,6 +58,7 @@ var state = View.prototype.state || new Backbone.Model();
 state.set({
 	touching: false,
 	clicking: false,
+	swiping: false,
 	direction: false
 });
 
@@ -68,7 +69,10 @@ state.set({
 
 		options: _.extend({}, View.prototype.options, {
 			touch: {
-				fastclick: (typeof window.FastClick == "undefined") ? true : false
+				fastclick: (typeof window.FastClick == "undefined") ? true : false,
+				threshold: 10, // in pixels
+				inertia: 4, // velocity (in px/sec) before a motion is considered a swipe
+				blocking: true
 			}
 		}),
 
@@ -84,9 +88,10 @@ state.set({
 
 		// Methods
 
-		initialize: function(){
+		initialize: function( options ){
 			// backwards compatibility (with versions that reset the options...)
-			this.options.touch = this.options.touch || {};
+			options = options || {};
+			this.options.touch = _.extend({}, this.options.touch, options);
 			if( this.options.touch.fastclick ) this.fastClick( this.events );
 			return View.prototype.initialize.apply(this, arguments);
 		},
@@ -104,7 +109,7 @@ state.set({
 			if( !monitor ) return;
 			//if (e.stopPropagation) e.stopPropagation();
 			if( _.inDebug() ) console.log("touchstart", e);
-			// save touches
+			// save data
 			var touches = e.originalEvent.touches;
 			this.params.set({ touches: touches });
 			this.trigger("touchstart", e);
@@ -118,9 +123,23 @@ state.set({
 			//if (e.stopPropagation) e.stopPropagation();
 			if (e.preventDefault) e.preventDefault();
 			if( _.inDebug() ) console.log("touchmove", e);
-			// compare with e.originalEvent.changedTouches
+			// compare with e.originalEvent.changedTouches?
 			var touches = e.originalEvent.touches;
+			// calculate velocity ( support only single finger for now )
+			if( touches.length === 1 ){
+				var previous = this.params.get("_previousTouch");
+				var direction = ( previous ) ? this._touchDirection( touches[0], previous ) : false;
+				// set the states
+				this.state.set({
+					swiping: (direction) ? true : false,
+					direction: direction
+				});
+				// save previous touch
+				this.params.set({ _previousTouch: { pageX: touches[0].pageX, pageY: touches[0].pageY } });
+			}
+			// update data (is this needed?)
 			this.params.set({ touches: touches });
+
 			this.trigger("touchmove", e);
 			if(this.touchmove) this.touchmove( e );
 		},
@@ -134,6 +153,16 @@ state.set({
 			// ending one touch doesn't mean there are no other touches...
 			var touches = e.originalEvent.touches;
 			this.params.set({ touches: touches });
+			// reset state if no touches left
+			if( !touches.length ){
+				this.state.set({
+					touching: false,
+					clicking: false,
+					swiping: false,
+					direction: false
+				});
+				this.params.unset("_previousTouch");
+			}
 			this.trigger("touchend", e);
 			if(this.touchend) this.touchend( e );
 		},
@@ -159,10 +188,6 @@ state.set({
 
 			return el;
 		},
-
-		touchPrevents : true,
-
-		touchThreshold : 10,
 
 		// Enables better touch support
 		//
@@ -200,7 +225,7 @@ state.set({
 		// touchend occurs. If no touchmove happened
 		// inbetween touchstart and touchend we trigger the event
 		//
-		// The `touchPrevents` toggle decides if Backbone.touch
+		// The `blocking` toggle decides if the logic
 		// will stop propagation and prevent default
 		// for *button* and *a* elements
 		_touchHandler : function(e) {
@@ -216,16 +241,16 @@ state.set({
 					this.params.set({ touches: touches });
 					break;
 				case 'touchmove':
-					// state
+					// state (put this behind a threshold condition)
 					this.state.set({ clicking: false });
 					break;
 				case 'touchend':
 					var old = this.params.get("touches")[0];
-					var threshold = this.touchThreshold;
+					var threshold = this.options.touch.threshold;
 					if (x < (old.clientX + threshold) && x > (old.clientX - threshold) &&
 						y < (old.clientY + threshold) && y > (old.clientY - threshold)) {
 						this.state.set({ clicking: false });
-						if (this.touchPrevents) {
+						if (this.options.touch.blocking) {
 							var tagName = e.currentTarget.tagName;
 							if (tagName === 'BUTTON' ||
 								tagName === 'A') {
@@ -237,6 +262,29 @@ state.set({
 					}
 					break;
 			}
+		},
+
+		_touchDirection: function( a, b ){
+			var direction = false;
+			var inertia = this.options.touch.inertia;
+			var threshold = this.options.touch.threshold;
+			var x = a.pageX - b.pageX;
+			var y = a.pageY - b.pageY;
+
+			if( x > inertia && y < threshold ){
+				direction = "right";
+			}
+			if( x < -inertia && y < threshold  ){
+				direction = "left";
+			}
+			if( y > inertia && x < threshold ){
+				direction = "bottom";
+			}
+			if( y < -inertia && x < threshold ){
+				direction = "top";
+			}
+
+			return direction;
 		}
 	});
 
