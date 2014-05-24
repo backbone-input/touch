@@ -2,7 +2,7 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 0.5.0 (Mon, 31 Mar 2014 09:20:34 GMT)
+ * Version: 0.6.0 (Sat, 24 May 2014 03:18:47 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
@@ -12,20 +12,21 @@
  * @license MIT license
  */
 
-(function (factory) {
 
-	"use strict";
+(function (lib) {
+
+	//"use strict";
 
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
-		define(['underscore', 'backbone'], factory);
+		define(['jquery', 'underscore', 'backbone'], lib);
 	} else {
 		// Browser globals
-		factory(_, Backbone);
+		lib($, _, Backbone);
 	}
-}(function (_, Backbone) {
+}(function ($, _, Backbone) {
 
-	"use strict";
+	//"use strict";
 	// better way to define global scope?
 	var window = window || {};
 
@@ -42,7 +43,17 @@
 	var View = Backbone.View;
 
 
+// extend existing params
+var params = View.prototype.params || new Backbone.Model();
+
+// defaults
+params.set({
+	touches: {}
+});
+
 	var Touch = View.extend({
+
+		name: "touch",
 
 		options: _.extend({}, View.prototype.options, {
 			touch: {
@@ -55,6 +66,8 @@
 			"touchmove": "_touchmove",
 			"touchend": "_touchend"
 		}),
+
+		params: params,
 
 		initialize: function(){
 			// backwards compatibility (with versions that reset the options...)
