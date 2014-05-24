@@ -2,7 +2,7 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 0.6.0 (Sat, 24 May 2014 03:18:47 GMT)
+ * Version: 0.7.0 (Sat, 24 May 2014 05:26:32 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
@@ -51,6 +51,17 @@ params.set({
 	touches: {}
 });
 
+// extend existing params
+var state = View.prototype.state || new Backbone.Model();
+
+// defaults
+state.set({
+	touching: false,
+	clicking: false,
+	direction: false
+});
+
+
 	var Touch = View.extend({
 
 		name: "touch",
@@ -69,6 +80,10 @@ params.set({
 
 		params: params,
 
+		state: state,
+
+		// Methods
+
 		initialize: function(){
 			// backwards compatibility (with versions that reset the options...)
 			this.options.touch = this.options.touch || {};
@@ -76,12 +91,22 @@ params.set({
 			return View.prototype.initialize.apply(this, arguments);
 		},
 
+		// Interface
+
+		// Detect if touch handlers should be used over listening for click
+		// Allows custom detection implementations
+		isTouch : 'ontouchstart' in document && !('callPhantom' in window),
+
+		// Protected methods
 		_touchstart: function( e ){
 			// prerequisite
 			var monitor = _.inArray("touch", this.options.monitor);
 			if( !monitor ) return;
 			//if (e.stopPropagation) e.stopPropagation();
 			if( _.inDebug() ) console.log("touchstart", e);
+			// save touches
+			var touches = e.originalEvent.touches;
+			this.params.set({ touches: touches });
 			this.trigger("touchstart", e);
 			if(this.touchstart) this.touchstart( e );
 		},
@@ -93,6 +118,9 @@ params.set({
 			//if (e.stopPropagation) e.stopPropagation();
 			if (e.preventDefault) e.preventDefault();
 			if( _.inDebug() ) console.log("touchmove", e);
+			// compare with e.originalEvent.changedTouches
+			var touches = e.originalEvent.touches;
+			this.params.set({ touches: touches });
 			this.trigger("touchmove", e);
 			if(this.touchmove) this.touchmove( e );
 		},
@@ -103,6 +131,9 @@ params.set({
 			if( !monitor ) return;
 			//if (e.stopPropagation) e.stopPropagation();
 			if( _.inDebug() ) console.log("touchend", e);
+			// ending one touch doesn't mean there are no other touches...
+			var touches = e.originalEvent.touches;
+			this.params.set({ touches: touches });
 			this.trigger("touchend", e);
 			if(this.touchend) this.touchend( e );
 		},
@@ -129,15 +160,9 @@ params.set({
 			return el;
 		},
 
-		_touching : false,
-
 		touchPrevents : true,
 
 		touchThreshold : 10,
-
-		// Detect if touch handlers should be used over listening for click
-		// Allows custom detection implementations
-		isTouch : 'ontouchstart' in document && !('callPhantom' in window),
 
 		// Enables better touch support
 		//
@@ -180,20 +205,26 @@ params.set({
 		// for *button* and *a* elements
 		_touchHandler : function(e) {
 			if (!('changedTouches' in e.originalEvent)) return;
-			var touch = e.originalEvent.changedTouches[0];
-			var x = touch.clientX;
-			var y = touch.clientY;
+			var touches = e.originalEvent.changedTouches;
+			var x = touches[0].clientX;
+			var y = touches[0].clientY;
 			switch (e.type) {
 				case 'touchstart':
-					this._touching = [x, y];
+					// state
+					this.state.set({ clicking: true });
+					// data
+					this.params.set({ touches: touches });
+					break;
+				case 'touchmove':
+					// state
+					this.state.set({ clicking: false });
 					break;
 				case 'touchend':
-					var oldX = this._touching[0];
-					var oldY = this._touching[1];
+					var old = this.params.get("touches")[0];
 					var threshold = this.touchThreshold;
-					if (x < (oldX + threshold) && x > (oldX - threshold) &&
-						y < (oldY + threshold) && y > (oldY - threshold)) {
-						this._touching = false;
+					if (x < (old.clientX + threshold) && x > (old.clientX - threshold) &&
+						y < (old.clientY + threshold) && y > (old.clientY - threshold)) {
+						this.state.set({ clicking: false });
 						if (this.touchPrevents) {
 							var tagName = e.currentTarget.tagName;
 							if (tagName === 'BUTTON' ||
