@@ -76,19 +76,27 @@ var View = Backbone.View.extend({
 	},
 
 	touchend: function( e ){
-		// hide circle
-		$(".circle").hide();
+		// check if there are other touches
+		var coords = this.params.get("touches");
+		if( coords.length > 0 ){
+			this.positionCircle( coords[0] );
+		} else {
+			// hide circle
+			$(".circle").hide();
+		}
 	},
 
 	positionCircle: function( coords ){
-	console.log(coords );
 		$(".circle").css({ top : coords.pageY, left: coords.pageX });
 	}
 
 });
 
 var view = new View();
-
+// display alert
+if( !view.isTouch ){
+	$("body").html("This example requires a touch device");
+}
 </script>
 
 </body>
