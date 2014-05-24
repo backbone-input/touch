@@ -9,12 +9,16 @@ The plugin is made to work with your existing views. It replaces the `delegateEv
 ## Examples
 
 * [Single Touch](https://rawgit.com/backbone-input/touch/master/build/examples/single-touch.html)
+* [Multi Touch](https://rawgit.com/backbone-input/touch/master/build/examples/multi-touch.html)
+* [Horizontal Swipe](https://rawgit.com/backbone-input/touch/master/build/examples/horizontal-swipe.html)
 
 
 ## Features
 
 * Addresses the 300ms delay
 * Uses FastClick if available
+* Multi-touch monitoring
+* One finger swipes
 * AMD/CommonJS module
 
 
