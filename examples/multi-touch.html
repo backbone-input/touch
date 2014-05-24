@@ -1,0 +1,139 @@
+<!doctype html>
+<html>
+<head>
+	<title>Backbone Input: Touch - Multi touch</title>
+
+	<style>
+
+		html, body {
+			width: 100%;
+			height: 100%;
+		}
+
+		.circle {
+			position: absolute;
+			top: 0;
+			left: 0;
+			width: 100px;
+			height: 100px;
+			margin: -50px 0 0 -50px;
+			-moz-border-radius: 50%;
+			-webkit-border-radius: 50%;
+			border-radius: 50%;
+			background: #4679BD;
+		}
+
+		/* Disable certain interactions on touch devices */
+		body {
+			-webkit-touch-callout: none;
+			-webkit-text-size-adjust: none;
+			-webkit-user-select: none;
+			-webkit-highlight: none;
+			-webkit-tap-highlight-color: rgba(0,0,0,0);
+			-webkit-overflow-scrolling: touch;
+		}
+
+	</style>
+</head>
+<body>
+
+
+
+<script id="circle" type="text/template">
+	<div class="circle"><!-- --></div>
+</script>
+
+<!-- Dependencies -->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/handlebars.js/1.0.0/handlebars.min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.4.4/underscore-min.js"></script>
+<script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/backbone.js/1.0.0/backbone-min.js"></script>
+
+<!-- plugin lib -->
+<script src="../build/backbone.input.touch.js"></script>
+
+<script type="text/javascript">
+//var DEBUG = true;
+
+var template = $("#circle").html();
+
+var View = Backbone.View.extend({
+	el : "body", // monitor the whole body
+
+	options: {
+		monitor: ["touch"]
+	},
+
+	touchstart: function( e ){
+		// data
+		var touches = this.params.get("touches");
+		for(var i = 0; i < touches.length; i++ ){
+			var touch = touches[i];
+			// find circle
+			var $el = $("#"+ touch.identifier +":first");
+			if( !$el.length ){
+				this.createCircle( touch );
+			}
+		}
+	},
+
+	touchmove: function( e ){
+		// data
+		var touches = this.params.get("touches");
+		for(var i = 0; i < touches.length; i++ ){
+			var touch = touches[i];
+			// find circle
+			var $el = $("#"+ touch.identifier +":first");
+			if( !$el.length ) continue; // do nothing?
+			this.moveCircle( $el, touch );
+		}
+	},
+
+	touchend: function( e ){
+		// data
+		var ids = [];
+		var touches = this.params.get("touches");
+		var $circles = $(".circle");
+		var self = this;
+		// get the touch ids
+		for(var i = 0; i < touches.length; i++ ){
+			ids.push( touches[i].identifier );
+		}
+		// compare with what's presented
+		$circles.each(function(){
+			var touch = touches[i];
+			// find circle
+			var id = parseInt( $(this).attr("id") );
+			// stop if we've found the id
+			if( ids.indexOf(id) > -1 ) return;
+			self.removeCircle( $(this) );
+		});
+	},
+
+	createCircle: function( coords ){
+		var $el = $( template ).attr("id", coords.identifier);
+		// add circle to the DOM
+		$el.appendTo("body");
+		// position
+		this.moveCircle( $el, coords );
+	},
+
+	moveCircle: function( $el, coords ){
+		$el.css({ top : coords.pageY, left: coords.pageX });
+	},
+
+	removeCircle: function( $el ){
+		$el.remove();
+	}
+
+});
+
+var view = new View();
+// display alert
+if( !view.isTouch ){
+	$("body").html("This example requires a touch device");
+}
+</script>
+
+</body>
+</html>
