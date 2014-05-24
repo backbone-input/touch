@@ -1,7 +1,7 @@
 <!doctype html>
 <html>
 <head>
-	<title>Backbone Input: Touch - Single swipe</title>
+	<title>Backbone Input: Touch - Single touch</title>
 
 	<style>
 
@@ -56,9 +56,9 @@
 var View = Backbone.View.extend({
 	el : "body", // monitor the whole body
 
-	options: {
+	options: _.extend(Backbone.View.prototype.options, {
 		monitor: ["touch"]
-	},
+	}),
 
 	touchstart: function( e ){
 		// update position
