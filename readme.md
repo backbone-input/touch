@@ -43,12 +43,12 @@ Manual download
 
 Note that this extension currently overwrites `Backbone.View` but its features are behing an option flag, to limit its usage only when needed.
 
-After all dependencies (an plugin) are loaded,  simply state:
+After all dependencies (an plugin) are loaded,  simply include touch in your ```monitor``` array:
 
 ```
 var view = new Backbone.View({
 	options: {
-		touch: true
+		monitor: ["touch"]
 	}
 });
 ```
