@@ -2,7 +2,7 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 0.7.0 (Sat, 24 May 2014 09:24:43 GMT)
+ * Version: 0.8.0 (Sat, 24 May 2014 09:29:57 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
