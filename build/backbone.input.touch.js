@@ -2,7 +2,7 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 0.8.0 (Sat, 24 May 2014 09:29:57 GMT)
+ * Version: 0.8.0 (Wed, 18 Jun 2014 04:34:23 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
@@ -71,8 +71,9 @@ state.set({
 			touch: {
 				fastclick: (typeof window.FastClick == "undefined") ? true : false,
 				threshold: 10, // in pixels
-				inertia: 4, // velocity (in px/sec) before a motion is considered a swipe
-				blocking: true
+				inertia: 2, // velocity (in px/sec) before a motion is considered a swipe
+				blocking: true,
+				auto: true
 			}
 		}),
 
@@ -92,7 +93,14 @@ state.set({
 			// backwards compatibility (with versions that reset the options...)
 			options = options || {};
 			this.options.touch = _.extend({}, this.options.touch, options);
+			this.options.monitor = this.options.monitor || [];
+			// optionally:
+			// - enable FastClick
 			if( this.options.touch.fastclick ) this.fastClick( this.events );
+			// - automatically monitor touch events on touch screens
+			if( this.options.touch.auto && this.isTouch && !_.inArray("touch", this.options.monitor) ){
+				this.options.monitor.push("touch");
+			}
 			return View.prototype.initialize.apply(this, arguments);
 		},
 
@@ -120,8 +128,6 @@ state.set({
 			// prerequisite
 			var monitor = _.inArray("touch", this.options.monitor);
 			if( !monitor ) return;
-			//if (e.stopPropagation) e.stopPropagation();
-			if (e.preventDefault) e.preventDefault();
 			if( _.inDebug() ) console.log("touchmove", e);
 			// compare with e.originalEvent.changedTouches?
 			var touches = e.originalEvent.touches;
@@ -136,6 +142,11 @@ state.set({
 				});
 				// save previous touch
 				this.params.set({ _previousTouch: { pageX: touches[0].pageX, pageY: touches[0].pageY } });
+				// stop propagating under conditions
+				if( direction == "left" || direction == "right" ) {
+					//if (e.stopPropagation) e.stopPropagation();
+					if (e.preventDefault) e.preventDefault();
+				}
 			}
 			// update data (is this needed?)
 			this.params.set({ touches: touches });
