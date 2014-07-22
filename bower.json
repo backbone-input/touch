@@ -4,7 +4,7 @@
 	"main": "./backbone.input.touch.js",
 	"ignore": ["test/*"],
 	"dependencies": {
-		"backbone": ">=1.0.0"
+		"backbone": ">=1.0.0", 
 		"underscore" : ">=1.4.4",
 		"jquery" : ">=2.0.3"
 	}
