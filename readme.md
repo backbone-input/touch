@@ -37,7 +37,7 @@ bower install backbone.input.touch`
 ```
 Manual download
 
-* [Uncompressed](https://github.com/backbone-input/touch/raw/master/build/backbone.input.touch-min.js)
+* [Uncompressed](https://github.com/backbone-input/touch/raw/master/build/backbone.input.touch.js)
 * [Minified](https://github.com/backbone-input/touch/raw/master/build/backbone.input.touch-min.js)
 
 
