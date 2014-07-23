@@ -8,9 +8,9 @@ The plugin is made to work with your existing views. It replaces the `delegateEv
 
 ## Examples
 
-* [Single Touch](https://rawgit.com/backbone-input/touch/master/build/examples/single-touch.html)
-* [Multi Touch](https://rawgit.com/backbone-input/touch/master/build/examples/multi-touch.html)
-* [Horizontal Swipe](https://rawgit.com/backbone-input/touch/master/build/examples/horizontal-swipe.html)
+* [Single Touch](http://rawgit.com/backbone-input/touch/master/examples/single-touch.html)
+* [Multi Touch](http://rawgit.com/backbone-input/touch/master/examples/multi-touch.html)
+* [Horizontal Swipe](http://rawgit.com/backbone-input/touch/master/examples/horizontal-swipe.html)
 
 
 ## Features
