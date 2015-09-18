@@ -1,11 +1,18 @@
 {
 	"name": "backbone.input.touch",
 	"version": "0.8.0",
-	"main": "./backbone.input.touch.js",
-	"ignore": ["test/*"],
+	"license": "MIT",
+	"main": "./build/backbone.input.touch.js",
+	"keywords": [
+			"backbone-input"
+	],
+	"ignore": [
+		"**/.*",
+		"test/*"
+	],
 	"dependencies": {
-		"backbone": ">=1.0.0", 
-		"underscore" : ">=1.4.4",
-		"jquery" : ">=2.0.3"
+		"backbone": ">=1.0.0",
+		"underscore": ">=1.4.4",
+		"jquery": ">=2.0.3"
 	}
 }
