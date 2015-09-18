@@ -1,6 +1,6 @@
 {
 	"name": "backbone.input.touch",
-	"version": "0.8.0",
+	"version": "0.9.0",
 	"author": "makesites",
 	"description": "Touch event bindings for Backbone views",
 	"homepage": "https://github.com/backbone-input/touch",
