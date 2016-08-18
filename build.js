@@ -51,7 +51,7 @@ function concat(opts) {
 			return _fs.readFileSync(filePath, FILE_ENCODING);
 		});
 
-	var wrapper = _fs.readFileSync('lib/scope.js', FILE_ENCODING);
+	var wrapper = _fs.readFileSync('lib/main.js', FILE_ENCODING);
 
 	var template = _handlebars.compile( wrapper );
 
