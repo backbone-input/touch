@@ -2,7 +2,7 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 0.8.0 (Wed, 18 Jun 2014 04:34:23 GMT)
+ * Version: 0.9.1 (Thu, 18 Aug 2016 11:08:17 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
@@ -48,6 +48,7 @@ var params = View.prototype.params || new Backbone.Model();
 
 // defaults
 params.set({
+	touchStart: {},
 	touches: {}
 });
 
@@ -119,6 +120,7 @@ state.set({
 			if( _.inDebug() ) console.log("touchstart", e);
 			// save data
 			var touches = e.originalEvent.touches;
+			this.params.set({ touchStart: touches });
 			this.params.set({ touches: touches });
 			this.trigger("touchstart", e);
 			if(this.touchstart) this.touchstart( e );
@@ -296,7 +298,24 @@ state.set({
 			}
 
 			return direction;
+		},
+
+		// replacement for: var distance = e.movementX;
+		_touchDistance: function( num, axis ){
+			// fallbacks
+			num = num || 0;
+			axis = axis || "x"; // defualt is horizontal
+			// variables
+			var start = this.params.get('touchStart');
+			var touches = this.params.get('touches');
+			var coords = {
+				x: "clientX",
+				y: "clientY"
+			};
+			// fallbacks?
+			return touches[num][coords[axis]] - start[num][coords[axis]];
 		}
+
 	});
 
 
