@@ -2,7 +2,7 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 0.9.2 (Fri, 19 Aug 2016 08:16:26 GMT)
+ * Version: 0.9.2 (Fri, 19 Aug 2016 09:04:12 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
@@ -121,8 +121,8 @@ state.set({
 			if( _.inDebug() ) console.log("touchstart", e);
 			// save data
 			var touches = e.originalEvent.touches;
-			this.params.set({ touchStart: _.copy(touches) });
-			this.params.set({ touches: _.copy(touches) });
+			this.params.set({ touchStart: _.extend({}, touches) });
+			this.params.set({ touches: _.extend({}, touches) });
 			this.trigger("touchstart", e);
 			if(this.touchstart) this.touchstart( e );
 		},
@@ -144,7 +144,7 @@ state.set({
 					direction: direction
 				});
 				// save previous touch
-				this.params.set({ touchPrevious: _.copy( touches ) });
+				this.params.set({ touchPrevious: _.extend({}, touches ) });
 				// stop propagating under conditions
 				if( direction == "left" || direction == "right" ) {
 					//if (e.stopPropagation) e.stopPropagation();
@@ -166,7 +166,7 @@ state.set({
 			if( _.inDebug() ) console.log("touchend", e);
 			// ending one touch doesn't mean there are no other touches...
 			var touches = e.originalEvent.touches;
-			this.params.set({ touches: _.copy(touches) });
+			this.params.set({ touches: _.extend({}, touches) });
 			// reset state if no touches left
 			if( !touches.length ){
 				this.state.set({
@@ -254,7 +254,7 @@ state.set({
 					// state
 					this.state.set({ clicking: true });
 					// data
-					this.params.set({ touches: _.copy(touches) });
+					this.params.set({ touches: _.extend({}, touches) });
 					break;
 				case 'touchmove':
 					// state (put this behind a threshold condition)
@@ -332,7 +332,27 @@ state.set({
 		// cloning an object (where Object.create fails)
 		copy: function( obj ) {
 			return JSON.parse( JSON.stringify( obj ) );
+		},
+
+		// deep extend, multi-object
+		extend: function() {
+			var objects = Array.prototype.slice.call(arguments);
+			var destination = objects.shift();
+			//
+			for( var num in objects){
+				var source = objects[num];
+				for (var property in source) {
+					if (source[property] && source[property].constructor && source[property].constructor === Object) {
+						destination[property] = destination[property] || {};
+						arguments.callee(destination[property], source[property]);
+					} else {
+						destination[property] = source[property];
+					}
+				}
+			}
+			return destination;
 		}
+
 	});
 
 
