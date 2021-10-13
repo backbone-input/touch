@@ -2,7 +2,7 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 1.0.0 (Wed, 13 Oct 2021 05:30:21 GMT)
+ * Version: 1.0.1 (Wed, 13 Oct 2021 05:55:12 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
@@ -114,7 +114,8 @@ state.set({
 
 		// Detect if touch handlers should be used over listening for click
 		// Allows custom detection implementations
-		isTouch : 'ontouchstart' in document && !('callPhantom' in window),
+		isTouch : ( 'ontouchstart' in window ) || ( navigator.maxTouchPoints > 0 ) || ( navigator.msMaxTouchPoints > 0 ),
+		//old test: 'ontouchstart' in document && !('callPhantom' in window),
 
 		// Protected methods
 		_touchstart: function( e ){
