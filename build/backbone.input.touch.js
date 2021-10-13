@@ -2,33 +2,40 @@
  * @name backbone.input.touch
  * Touch event bindings for Backbone views
  *
- * Version: 0.9.2 (Fri, 19 Aug 2016 09:04:12 GMT)
+ * Version: 1.0.0 (Wed, 13 Oct 2021 05:30:21 GMT)
  * Homepage: https://github.com/backbone-input/touch
  *
  * @author makesites
- * Initiated by: Makis Tracend (@tracend)
+ * Initiated by Makis Tracend (@tracend)
  *
  * @cc_on Copyright © Makesites.org
  * @license MIT license
  */
 
-
 (function (lib) {
 
 	//"use strict";
 
+	// Support module loaders
 	if (typeof define === 'function' && define.amd) {
 		// AMD. Register as an anonymous module.
-		define(['jquery', 'underscore', 'backbone'], lib);
+		define('backbone.input.touch', ['jquery', 'underscore', 'backbone'], lib);
+	} else if ( typeof module === "object" && module && typeof module.exports === "object" ){
+		// Expose as module.exports in loaders that implement CommonJS module pattern.
+		module.exports = lib;
 	} else {
 		// Browser globals
-		lib($, _, Backbone);
+		// - getting the available query lib
+		var $ = window.jQuery || window.Zepto || window.vQuery;
+		lib($, window._, window.Backbone);
 	}
+
 }(function ($, _, Backbone) {
 
-	//"use strict";
-	// better way to define global scope?
-	var window = window || {};
+	// support for Backbone APP() view if available...
+	var APP = APP || window.APP || null;
+	var isAPP = ( APP !== null );
+	var View = ( isAPP && typeof APP.View !== "undefined" ) ? APP.View : Backbone.View;
 
 	// The `getValue` and `delegateEventSplitter` is copied from
 	// Backbones source, unfortunately these are not available
@@ -38,9 +45,6 @@
 		return _.isFunction(object[prop]) ? object[prop]() : object[prop];
 	};
 	var delegateEventSplitter = /^(\S+)\s*(.*)$/;
-
-	//var View = ( isAPP ) ? APP.View : Backbone.View;
-	var View = Backbone.View;
 
 
 // default options
@@ -84,9 +88,9 @@ state.set({
 			"touchend": "_touchend"
 		}),
 
-		params: params,
+		params: params.clone(),
 
-		state: state,
+		state: state.clone(),
 
 		// Methods
 
@@ -357,7 +361,25 @@ state.set({
 
 
 
-	Backbone.View = Touch;
+	// update Backbone namespace regardless
+	Backbone.Input = Backbone.Input ||{};
+	Backbone.Input.Touch = Touch;
+	// update APP namespace
+	if( isAPP ){
+		APP.Input = APP.Input || {};
+		APP.Input.Touch = Touch;
+	}
 
-	return Backbone;
+	// If there is a window object, that at least has a document property
+	if( typeof window === "object" && typeof window.document === "object" ){
+		window.Backbone = Backbone;
+		// update APP namespace
+		if( isAPP ){
+			window.APP = APP;
+		}
+	}
+
+	// support module loaders
+	return Touch;
+
 }));
