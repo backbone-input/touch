@@ -56,7 +56,7 @@
 var View = Backbone.View.extend({
 	el : "body", // monitor the whole body
 
-	options: _.extend(Backbone.View.prototype.options, {
+	options: _.extend( (new Backbone.View()).options, {
 		monitor: ["touch"]
 	}),
 
